@@ -1,0 +1,68 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+local_settings.py
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE / editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Mac / Linux / Windows system files
+.DS_Store
+Thumbs.db
+
+# Pre-commit / lint cache
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# Pipenv / poetry
+Pipfile.lock
+poetry.lock
+
+# Node / frontend (if you have React/Vue in your Django project)
+node_modules/
+dist/
+build/
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Database files
+*.sqlite3
