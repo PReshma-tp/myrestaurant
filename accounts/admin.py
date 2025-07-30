@@ -7,3 +7,4 @@ class CustomUserAdmin(UserAdmin):
     list_display = ("username", "email", "is_staff", "is_active")
     search_fields = ("username", "email")
     ordering = ("username",)
+    

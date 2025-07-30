@@ -28,3 +28,4 @@ class MenuItemAdmin(admin.ModelAdmin):
     list_display = ("name", "restaurant", "price", "cuisine")
     list_filter = ("cuisine", "restaurant")
     search_fields = ("name",)
+    
