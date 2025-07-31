@@ -13,8 +13,7 @@ class RestaurantListView(ListView):
     def get_queryset(self):
         return (
             Restaurant.objects
-            .prefetch_related('cuisines')
-            .prefetch_related(Prefetch('photos', queryset=Photo.objects.all()))
+            .prefetch_related('cuisines', 'photos')
             .annotate(avg_rating=Avg('reviews__rating'))
         )
 
