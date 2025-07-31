@@ -1,0 +1,21 @@
+/* Spotlight & Restaurant list images */
+.fixed-img {
+    height: 180px;
+    width: 100%;
+    object-fit: cover; /* Prevent stretching */
+}
+
+/* Detail page main image */
+.detail-img {
+    max-height: 400px;
+    width: 100%;
+    object-fit: cover;
+}
+
+/* Menu item images */
+.menu-img {
+    height: 150px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
