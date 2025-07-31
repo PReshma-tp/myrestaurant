@@ -19,8 +19,8 @@
         {% endif %}
         <div class="card-body">
           <h5 class="card-title">{{ restaurant.name }}</h5>
-            {% if restaurant.ratings > 0 %}
-              <p class="mb-1">⭐ {{ restaurant.ratings|floatformat:1 }}</p>
+            {% if restaurant.avg_rating > 0 %}
+              <p class="mb-1">⭐ {{ restaurant.avg_rating|floatformat:1 }}</p>
             {% else %}
               <p class="mb-1 text-black">No user ratings</p>
             {% endif %}
