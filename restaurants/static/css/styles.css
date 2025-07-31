@@ -1,21 +1,29 @@
-/* Spotlight & Restaurant list images */
-.fixed-img {
-    height: 180px;
-    width: 100%;
-    object-fit: cover; /* Prevent stretching */
+.restaurant-card {
+    min-width: 250px; 
+    flex: 0 0 auto; 
 }
 
-/* Detail page main image */
-.detail-img {
-    max-height: 400px;
+.row .restaurant-card {
+    min-width: 100%;
+}
+
+.restaurant-img {
+    height: 15vw;
     width: 100%;
     object-fit: cover;
 }
 
-/* Menu item images */
-.menu-img {
-    height: 150px;
-    width: 100%;
-    object-fit: cover;
-    border-radius: 6px;
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .restaurant-img {
+    height: 25vw;      
+  }
 }
