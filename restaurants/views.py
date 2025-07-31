@@ -19,17 +19,9 @@ class RestaurantListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-<<<<<<< Updated upstream
-
-        # Filter spotlight restaurants from the main list to avoid a new DB query.
-        # self.object_list holds the full result from get_queryset().
-        context['spotlight_restaurants'] = [
-            r for r in self.object_list if r.spotlight
-=======
         
         context['spotlight_restaurants'] = [
             restaurant for restaurant in self.object_list if restaurant.spotlight
->>>>>>> Stashed changes
         ]
 
         return context
