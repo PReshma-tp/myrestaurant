@@ -30,4 +30,3 @@ class RestaurantListView(ListView):
         )
 
         return context
-    
