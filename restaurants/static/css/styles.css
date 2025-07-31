@@ -1,0 +1,29 @@
+.restaurant-card {
+    min-width: 250px; 
+    flex: 0 0 auto; 
+}
+
+.row .restaurant-card {
+    min-width: 100%;
+}
+
+.restaurant-img {
+    height: 15vw;
+    width: 100%;
+    object-fit: cover;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  .restaurant-img {
+    height: 25vw;      
+  }
+}
