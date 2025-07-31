@@ -21,13 +21,11 @@ class RestaurantListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['spotlight_restaurants'] = (
-            Restaurant.objects
-            .filter(spotlight=True)
-            .prefetch_related('cuisines')
-            .prefetch_related(Prefetch('photos', queryset=Photo.objects.all()))
-            .annotate(avg_rating=Avg('reviews__rating'))
-        )
+        # Filter spotlight restaurants from the main list to avoid a new DB query.
+        # self.object_list holds the full result from get_queryset().
+        context['spotlight_restaurants'] = [
+            r for r in self.object_list if r.spotlight
+        ]
 
         return context
     
