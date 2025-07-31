@@ -24,5 +24,5 @@ class RestaurantListView(ListView):
             restaurant for restaurant in self.object_list if restaurant.spotlight
         ]
 
-        return context
+      return context        
     
