@@ -4,9 +4,9 @@ from django.contrib.auth import login, logout
 from django.views.generic import FormView, RedirectView
 from django.contrib.auth.views import LoginView
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
-
-from .forms import RegisterForm, CustomAuthenticationForm
+from .forms import RegisterForm
 
 
 class RegisterView(FormView):
@@ -22,7 +22,6 @@ class RegisterView(FormView):
 
 class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
-    authentication_form = CustomAuthenticationForm
 
     def form_invalid(self, form):
         messages.error(self.request, "Invalid username or password.")
@@ -30,6 +29,7 @@ class CustomLoginView(LoginView):
 
 
 @method_decorator(csrf_protect, name="dispatch")
+@method_decorator(require_POST, name="dispatch")
 class LogoutView(RedirectView):
     pattern_name = "accounts:login"
 
@@ -37,8 +37,3 @@ class LogoutView(RedirectView):
         logout(request)
         messages.success(request, "You have been logged out.")
         return super().post(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        # Block GET requests to avoid CSRF vulnerability
-        messages.error(request, "Logout must be done via POST.")
-        return super().get(request, *args, **kwargs)
