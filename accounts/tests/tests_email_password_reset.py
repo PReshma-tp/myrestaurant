@@ -19,6 +19,7 @@ class PasswordResetEmailTests(TestCase):
             reverse('accounts:password_reset'),
             {'email': self.user_email}
         )
+        self.assertEqual(len(mail.outbox), 1)
         self.email = mail.outbox[0]
 
     def test_email_subject(self):
