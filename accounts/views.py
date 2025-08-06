@@ -80,22 +80,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             .select_related('user') \
             .order_by('-created_at')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        user = self.request.user
-
-        sections = {
-            'bookmarks': self._get_bookmarks(user),
-            'visited': self._get_visited(user),
-            'photos': self._get_photos(user),
-            'reviews': self._get_reviews(user),
-        }
-
-        for name, qs in sections.items():
-            context[f"{name}_count"] = qs.count()
-            context[name] = qs[:5]
-
-        return context
 class ProfileEditView(LoginRequiredMixin, UpdateView):
     form_class = ProfileUpdateForm
     template_name = 'accounts/profile_edit.html'
