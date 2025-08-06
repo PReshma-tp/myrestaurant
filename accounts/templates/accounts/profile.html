@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <!-- Sidebar -->
+    <div class="col-md-3 mb-4">
+        <div class="card bg-light text-white shadow-sm">
+            <div class="card-body">
+                <h4 class="fw-bold text-dark">{{ user.username|capfirst }}</h4>
+                <p class="mb-1 text-dark small">{{ user.email }}</p>
+                <span class="badge bg-primary mb-3">Foodie</span>
+
+                <!-- Stats -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-dark">Reviews</span>
+                        <span class="fw-bold text-primary">{{ reviews_count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-dark">Bookmarks</span>
+                        <span class="fw-bold text-primary">{{ bookmarks_count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-dark">Photos</span>
+                        <span class="fw-bold text-primary">{{ photos_count }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-dark">Visited</span>
+                        <span class="fw-bold text-primary">{{ visited_count }}</span>
+                    </div>
+                </div>
+
+                <hr class="border-secondary">
+
+                <!-- Navigation -->
+                <ul class="nav flex-column fs-6">
+                    <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-bookmark"></i> Bookmarks</span></li>
+                    <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-clock-history"></i> Recently Visited</span></li>
+                    <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-images"></i> Photos</span></li>
+                    <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-star"></i> Reviews</span></li>
+                    <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-gear"></i> Settings</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="col-md-9">
+    <div class="row g-4 align-items-stretch">
+        <!-- Bookmarks -->
+        <div class="col-md-6 d-flex">
+            <div class="card shadow-sm border-0 flex-fill">
+                <div class="card-header bg-warning text-dark fw-bold">
+                    <i class="bi bi-bookmark-fill"></i> Bookmarks
+                </div>
+                <div class="card-body text-muted">
+                    {% if bookmarks %}
+                        <ul class="mb-0">
+                            {% for b in bookmarks|slice:":2" %}
+                                <li>{{ b.restaurant.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        No bookmarks yet.
+                    {% endif %}
+                </div>
+                {% if bookmarks %}
+                    <div class="card-footer bg-transparent border-0 text-end">
+                        <button class="btn btn-sm btn-outline-secondary">View more</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recently Visited -->
+        <div class="col-md-6 d-flex">
+            <div class="card shadow-sm border-0 flex-fill">
+                <div class="card-header bg-primary text-dark fw-bold">
+                    <i class="bi bi-clock-history"></i> Recently Visited
+                </div>
+                <div class="card-body text-muted">
+                    {% if visited %}
+                        <ul class="mb-0">
+                            {% for v in visited|slice:":2" %}
+                                <li>{{ v.restaurant.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        No recently visited places.
+                    {% endif %}
+                </div>
+                {% if visited %}
+                    <div class="card-footer bg-transparent border-0 text-end">
+                        <button class="btn btn-sm btn-outline-secondary">View more</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Photos -->
+        <div class="col-md-6 d-flex">
+            <div class="card shadow-sm border-0 flex-fill">
+                <div class="card-header bg-info text-dark fw-bold">
+                    <i class="bi bi-camera-fill"></i> Photos
+                </div>
+                <div class="card-body text-muted">
+                    {% if photos %}
+                        {% for p in photos|slice:":2" %}
+                            <div class="d-flex mb-3 align-items-start">
+                                <div style="width: 120px; height: 120px; overflow: hidden; border-radius: 6px; flex-shrink: 0;">
+                                    <img src="{{ p.image.url }}" alt="Photo" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div class="ms-3">
+                                    <div class="fw-bold text-dark">
+                                        {% if p.content_type.model == 'restaurant' %}
+                                            Restaurant: {{ p.content_object }}
+                                        {% else %}
+                                            Food Item: {{ p.content_object }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="small text-secondary mb-1">
+                                        Uploaded on {{ p.uploaded_at|date:"M d, Y" }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No photos uploaded yet.
+                    {% endif %}
+                </div>
+                {% if photos %}
+                    <div class="card-footer bg-transparent border-0 text-end">
+                        <button class="btn btn-sm btn-outline-secondary">View more</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="col-md-6 d-flex">
+            <div class="card shadow-sm border-0 flex-fill">
+                <div class="card-header bg-success text-dark fw-bold">
+                    <i class="bi bi-star-fill"></i> Reviews
+                </div>
+                <div class="card-body text-muted">
+                    {% if reviews %}
+                        {% for r in reviews|slice:":2" %}
+                            <div class="d-flex mb-3 align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold text-dark">
+                                        {{ r.rating }}★ - 
+                                        {% if r.content_type.model == 'restaurant' %}
+                                            Restaurant: {{ r.content_object }}
+                                        {% else %}
+                                            Food Item: {{ r.content_object }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-secondary small mb-1">
+                                        Reviewed on {{ r.created_at|date:"M d, Y" }}
+                                    </div>
+                                    <div>
+                                        {{ r.comment|default:"No comment" }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        No reviews yet.
+                    {% endif %}
+                </div>
+                {% if reviews %}
+                    <div class="card-footer bg-transparent border-0 text-end">
+                        <button class="btn btn-sm btn-outline-secondary">View more</button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}
