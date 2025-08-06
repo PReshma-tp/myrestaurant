@@ -40,4 +40,6 @@ urlpatterns = [
         name='password_reset_complete',
     ),
     path('profile/', views.ProfileView.as_view(), name='profile'),
+    path('profile/edit/', views.ProfileEditView.as_view(), name='edit_profile'),
+    path('profile/change-password/', views.CustomPasswordChangeView.as_view(), name='change_password'),
 ]

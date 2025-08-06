@@ -39,7 +39,17 @@
                     <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-clock-history"></i> Recently Visited</span></li>
                     <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-images"></i> Photos</span></li>
                     <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-star"></i> Reviews</span></li>
-                    <li class="nav-item mb-2"><span class="text-dark"><i class="bi bi-gear"></i> Settings</span></li>
+                    <li class="nav-item mb-2">
+                        <a class="text-dark d-flex align-items-center text-decoration-none" data-bs-toggle="collapse" href="#settingsMenu" role="button" aria-expanded="false" aria-controls="settingsMenu">
+                            <i class="bi bi-gear me-1"></i> Settings
+                        </a>
+                        <div class="collapse mt-2 ms-4" id="settingsMenu">
+                            <ul class="list-unstyled">
+                                <li class="mb-1"><a href="{% url 'accounts:edit_profile' %}" class="text-dark text-decoration-none">Edit Profile</a></li>
+                                <li><a href="{% url 'accounts:change_password' %}" class="text-dark text-decoration-none">Change Password</a></li>
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
