@@ -1,12 +1,12 @@
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.views.generic import FormView, RedirectView
-from django.contrib.auth.views import LoginView
+from django.views.generic import FormView, RedirectView, UpdateView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
-from .forms import RegisterForm
+from .forms import RegisterForm, ProfileUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from interactions.models import Bookmark, Visited
@@ -79,3 +79,23 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return Review.objects.filter(user=user) \
             .select_related('user') \
             .order_by('-created_at')
+
+class ProfileEditView(LoginRequiredMixin, UpdateView):
+    form_class = ProfileUpdateForm
+    template_name = 'accounts/profile_edit.html'
+    success_url = reverse_lazy('accounts:profile')
+
+    def get_object(self):
+        return self.request.user
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Your profile has been updated successfully.")
+        return super().form_valid(form)
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/change_password.html'
+    success_url = reverse_lazy('accounts:profile')
+
+    def form_valid(self, form):
+        messages.success(self.request, "Your password has been updated successfully.")
+        return super().form_valid(form)

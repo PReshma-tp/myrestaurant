@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title mb-4">Edit Profile</h3>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% include "partials/_form_field.html" with field=form.first_name label="First Name" %}
+                {% include "partials/_form_field.html" with field=form.last_name label="Last Name" %}
+                {% include "partials/_form_field.html" with field=form.email label="Email" %}
+
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+
+            <hr>
+            <a href="{% url 'accounts:change_password' %}" class="btn btn-warning">Change Password</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
