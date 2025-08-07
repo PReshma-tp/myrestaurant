@@ -50,13 +50,13 @@ class RestaurantDetailView(DetailView):
         context["menu_items"] = self.object.menu_items.all()
         return context
 
-    def _photos_prefetch(self):
+    def _prefetch_potos(self):
         return Prefetch(
             "photos",
             queryset=Photo.objects.only("id", "image", "object_id")
         )
 
-    def _menu_items_prefetch(self):
+    def _prefetch_menu_items(self):
         return Prefetch(
             "menu_items",
             queryset=MenuItem.objects.prefetch_related(
