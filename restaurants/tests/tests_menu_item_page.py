@@ -58,7 +58,7 @@ class MenuItemDetailViewTests(TestCase):
         response = self.client.get(url)
         menu_item = response.context.get("menu_item")
         self.assertIsNotNone(menu_item)
-        self.assertEqual(menu_item.ratings, 4)
+        self.assertEqual(response.context['avg_rating'], 4)
 
     def test_context_contains_related_items(self):
         url = reverse("restaurants:menu_item_detail", args=[self.menu_item.id])
