@@ -68,6 +68,11 @@ class MenuItemDetailView(DetailView):
     model = MenuItem
     template_name = 'restaurants/menu_item_detail.html'
     context_object_name = 'menu_item'
+    pk_url_kwarg = "menu_id"
+
+    def get_object(self, queryset=None):
+        menu_id = self.kwargs.get('menu_id')
+        return self.get_queryset().get(pk=menu_id)
 
     def get_queryset(self):
         return self._menuitem_with_details()

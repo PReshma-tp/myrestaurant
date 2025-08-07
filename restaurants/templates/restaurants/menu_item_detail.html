@@ -43,7 +43,7 @@
     <h5>More from {{ menu_item.cuisine.name }} Cuisine</h5>
     <div class="row">
   {% for item in related_items %}
-    <a href="{% url 'restaurants:menu_item_detail' item.pk %}" class="col-sm-6 col-md-4 col-lg-3 text-decoration-none mb-2">
+    <a href="{% url 'restaurants:menu_item_detail' item.id %}" class="col-sm-6 col-md-4 col-lg-3 text-decoration-none mb-2">
       <div class="card h-100 shadow-sm d-flex flex-row">
         <div class="col-4 p-2 d-flex align-items-center">
           {% if item.photos.first %}
