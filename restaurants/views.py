@@ -70,17 +70,7 @@ class MenuItemDetailView(DetailView):
     context_object_name = 'menu_item'
 
     def get_queryset(self):
-        return (
-            MenuItem.objects
-            .select_related('restaurant', 'cuisine')
-            .annotate(avg_rating=Avg('reviews__rating'))
-            .prefetch_related(
-                Prefetch(
-                    'photos',
-                    queryset=Photo.objects.only('id', 'image', 'object_id').order_by('id')
-                )
-            )
-        )
+        return self._menuitem_with_details()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -96,19 +86,23 @@ class MenuItemDetailView(DetailView):
 
     def _get_related_items(self, menu_item):
         return (
-            MenuItem.objects
+            self._menuitem_with_details()
             .filter(
                 cuisine=menu_item.cuisine,
                 restaurant=menu_item.restaurant
             )
             .exclude(id=menu_item.id)
-            .select_related('cuisine')
+        )
+    
+    def _menuitem_with_details(self):
+        return (
+            MenuItem.objects
+            .select_related('restaurant', 'cuisine')
+            .annotate(avg_rating=Avg('reviews__rating'))
             .prefetch_related(
                 Prefetch(
                     'photos',
                     queryset=Photo.objects.only('id', 'image', 'object_id').order_by('id')
                 )
             )
-            .annotate(avg_rating=Avg('reviews__rating'))[:4]
         )
-

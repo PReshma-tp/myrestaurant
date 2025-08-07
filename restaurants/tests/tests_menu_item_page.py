@@ -76,7 +76,7 @@ class MenuItemDetailViewTests(TestCase):
         self.menu_item.photos.all().delete()
         url = reverse("restaurants:menu_item_detail", args=[self.menu_item.id])
         response = self.client.get(url)
-        self.assertIsNone(response.context.get("main_photo"))
+        self.assertIsNone(response.context.get("menu_photo"))
 
     def test_fallback_image_displayed_when_no_photo(self):
         self.menu_item.photos.all().delete()
