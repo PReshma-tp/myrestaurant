@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ restaurant.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'restaurants:restaurant_list' %}" class="btn btn-outline-secondary btn-sm">
+     Back
+    </a>
+  </div>
+
+  <div class="row">
+    <!-- Left Column: Main Photo -->
+    <div class="col-lg-6">
+      {% if main_photo %}
+        <img src="{{ main_photo.image.url }}"
+             class="img-fluid rounded shadow-sm mb-3 detail-img"
+             alt="{{ restaurant.name }}">
+        {% if restaurant.photos.count > 1 %}
+          <button type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#photoModal">
+            View all photos
+          </button>
+        {% endif %}
+      {% else %}
+        <img src="{% static 'images/No_Image_Available.jpg' %}"
+             class="img-fluid rounded shadow-sm mb-3 detail-img"
+             alt="Default image for {{ restaurant.name }}">
+      {% endif %}
+    </div>
+
+    <!-- Right Column: Restaurant Details -->
+    <div class="col-lg-6">
+      <h2>{{ restaurant.name }}</h2>
+      <p class="mb-2">
+        {% if restaurant.avg_rating %}
+          ⭐ {{ restaurant.avg_rating|floatformat:1 }}
+        {% else %}
+          <span class="text-muted">No user ratings</span>
+        {% endif %}
+      </p>
+
+      <p><strong>Cuisines:</strong>
+        {% for cuisine in restaurant.cuisines.all %}
+          {{ cuisine.name }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+          No cuisines listed.
+        {% endfor %}
+      </p>
+
+      <p><strong>Type:</strong> {{ restaurant.get_veg_type_display }}</p>
+      <p><strong>Cost for Two:</strong> ₹{{ restaurant.cost_for_two }}</p>
+      <p><strong>Status:</strong>
+        {% if restaurant.is_open %}
+          <span class="text-success fw-bold">Open</span>
+        {% else %}
+          <span class="text-danger fw-bold">Closed</span>
+        {% endif %}
+      </p>
+
+      {% if restaurant.opening_time and restaurant.closing_time %}
+        <p><strong>Opening Hours:</strong>
+          {{ restaurant.opening_time|time:"g:i A" }} – {{ restaurant.closing_time|time:"g:i A" }}
+        </p>
+      {% endif %}
+
+      {% if restaurant.description %}
+        <hr>
+        <p class="text-muted">{{ restaurant.description }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Menu Items -->
+  <h3 class="mb-3">Menu Items</h3>
+  {% if menu_items %}
+    <div class="row g-3">
+      {% for item in menu_items %}
+        <div class="col-sm-6 col-md-4 col-lg-3">
+          <div class="card h-100 shadow-sm p-2 d-flex flex-row align-items-center">
+            {% with first_photo=item.photos.first %}
+              {% if first_photo %}
+                <img src="{{ first_photo.image.url }}"
+                     class="menu-item-img rounded me-2"
+                     alt="{{ item.name }}">
+              {% else %}
+                <img src="{% static 'images/No_Image_Available.jpg' %}"
+                     class="menu-item-img rounded me-2"
+                     alt="Default image for {{ item.name }}">
+              {% endif %}
+            {% endwith %}
+            <div>
+              <h6 class="mb-1">{{ item.name }}</h6>
+              <p class="mb-1 small">
+                {% if item.avg_rating %}
+                  <span class="text-warning">⭐ {{ item.avg_rating|floatformat:1 }}</span>
+                {% else %}
+                  <span class="text-muted">No user ratings</span>
+                {% endif %}
+              </p>
+              <p class="fw-bold mb-0">₹{{ item.price }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No menu items available.</p>
+  {% endif %}
+
+  <!-- Photos Modal -->
+  <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header justify-content-between">
+          <h5 class="modal-title">{{ restaurant.name }} - All Photos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            {% for photo in extra_photos %}
+              <div class="col-sm-6 col-md-4">
+                <img src="{{ photo.image.url }}"
+                     class="img-thumbnail modal-photo-thumb"
+                     alt="{{ restaurant.name }} photo {{ forloop.counter }}">
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

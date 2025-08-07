@@ -1,6 +1,6 @@
 .restaurant-card {
-    min-width: 250px; 
-    flex: 0 0 auto; 
+    min-width: 250px;
+    flex: 0 0 auto;
 }
 
 .row .restaurant-card {
@@ -24,6 +24,24 @@
 
 @media (max-width: 768px) {
   .restaurant-img {
-    height: 25vw;      
+    height: 25vw;
   }
+}
+
+.detail-img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+}
+
+.menu-item-img{
+  width: 120px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-photo-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
 }
