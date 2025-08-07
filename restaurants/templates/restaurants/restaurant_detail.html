@@ -83,7 +83,7 @@
   {% if menu_items %}
     <div class="row g-3">
       {% for item in menu_items %}
-        <div class="col-sm-6 col-md-4 col-lg-3">
+        <a href="{% url 'restaurants:menu_item_detail' item.pk %}" class="col-sm-6 col-md-4 col-lg-3 text-decoration-none">
           <div class="card h-100 shadow-sm p-2 d-flex flex-row align-items-center">
             {% with first_photo=item.photos.first %}
               {% if first_photo %}
@@ -108,7 +108,7 @@
               <p class="fw-bold mb-0">₹{{ item.price }}</p>
             </div>
           </div>
-        </div>
+        </a>
       {% endfor %}
     </div>
   {% else %}

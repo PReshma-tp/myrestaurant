@@ -63,3 +63,52 @@ class RestaurantDetailView(DetailView):
                 self._prefetch_photos()
             ).annotate(avg_rating=Avg("reviews__rating"))
         )
+
+class MenuItemDetailView(DetailView):
+    model = MenuItem
+    template_name = 'restaurants/menu_item_detail.html'
+    context_object_name = 'menu_item'
+
+    def get_queryset(self):
+        return (
+            MenuItem.objects
+            .select_related('restaurant', 'cuisine')
+            .annotate(avg_rating=Avg('reviews__rating'))
+            .prefetch_related(
+                Prefetch(
+                    'photos',
+                    queryset=Photo.objects.only('id', 'image', 'object_id').order_by('id')
+                )
+            )
+        )
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        menu_item = self.object
+
+        context.update({
+            "restaurant": menu_item.restaurant,
+            "menu_photo": menu_item.photos.all().first(),
+            "related_items": self._get_related_items(menu_item),
+            "avg_rating": menu_item.avg_rating,
+    })
+        return context
+
+    def _get_related_items(self, menu_item):
+        return (
+            MenuItem.objects
+            .filter(
+                cuisine=menu_item.cuisine,
+                restaurant=menu_item.restaurant
+            )
+            .exclude(id=menu_item.id)
+            .select_related('cuisine')
+            .prefetch_related(
+                Prefetch(
+                    'photos',
+                    queryset=Photo.objects.only('id', 'image', 'object_id').order_by('id')
+                )
+            )
+            .annotate(avg_rating=Avg('reviews__rating'))[:4]
+        )
+

@@ -45,3 +45,16 @@
   height: 180px;
   object-fit: cover;
 }
+
+.menu-item-detail-img{
+  max-height: 350px; 
+  object-fit: cover; 
+  width: 100%;
+}
+
+.related-menu-img{
+  width: 100%;
+  height: 80px; 
+  object-fit: cover;
+}
+
