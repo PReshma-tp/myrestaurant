@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Back Button -->
+  <div class="text-end">
+    <a href="{% url 'restaurants:restaurant_detail' menu_item.restaurant.pk %}" class="btn btn-outline-secondary">
+      ← Back to {{ restaurant.name }}
+    </a>
+  </div>
+
+  <!-- Main Menu Item Display -->
+  <div class="row mt-4 align-items-center">
+    <div class="col-md-5">
+      {% if menu_photo %}
+        <img src="{{ menu_photo.image.url }}" class="rounded shadow menu-item-detail-img" alt="{{ menu_item.name }}">
+      {% else %}
+        <img src="{% static 'images/No_Image_Available.jpg' %}" class=" rounded shadow menu-item-detail-img" alt="No image">
+      {% endif %}
+    </div>
+    <div class="col-md-7">
+      <h2>{{ menu_item.name }}</h2>
+      <p class="text-muted mb-1">{{ menu_item.cuisine.name }}</p>
+      <p>{{ menu_item.description|default:"No description provided." }}</p>
+      <h4>₹{{ menu_item.price }}</h4>
+      {% if avg_rating %}
+        <p class="mb-1">Rating: 
+         <span class="text-warning">⭐ {{ avg_rating|floatformat:1 }}</span>
+        </p>
+      {% else %}
+        <p class="mb-1 text-muted">No rating yet</p>
+      {% endif %}
+      <p class="{% if menu_item.is_available %}text-success{% else %}text-danger{% endif %}">
+        {% if menu_item.is_available %} Available {% else %}Currently Unavailable{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Related Items -->
+   <hr class="my-5">
+  {% if related_items %}
+    <h5>More from {{ menu_item.cuisine.name }} Cuisine</h5>
+    <div class="row">
+  {% for item in related_items %}
+    <a href="{% url 'restaurants:menu_item_detail' item.id %}" class="col-sm-6 col-md-4 col-lg-3 text-decoration-none mb-2">
+      <div class="card h-100 shadow-sm d-flex flex-row">
+        <div class="col-4 p-2 d-flex align-items-center">
+          {% if item.photos.first %}
+            <img src="{{ item.photos.first.image.url }}" class="img-fluid rounded related-menu-img"  alt="{{ item.name }}">
+          {% else %}
+            <img src="{% static 'images/No_Image_Available.jpg' %}" class="img-fluid rounded related-menu-img"  alt="No image">
+          {% endif %}
+        </div>
+        <div class="col-8 p-2">
+          <h6 class="mb-1 text-truncate">{{ item.name }}</h6>
+          <p class="mb-1 text-muted small">₹{{ item.price }}</p>
+          <p class="mb-0 small text-truncate">{{ item.description|default:"No description" }}</p>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+    </div>
+  {% else %}
+    <h4 class="text-dark mb-3">No other items available in {{ menu_item.cuisine.name }} cuisine.</h4>
+  {% endif %}
+
+</div>
+{% endblock %}
