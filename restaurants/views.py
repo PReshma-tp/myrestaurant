@@ -36,8 +36,8 @@ class RestaurantDetailView(DetailView):
             Restaurant.objects
             .prefetch_related(
                 "cuisines",
-                self._photos_prefetch(),
-                self._menu_items_prefetch(),
+                self._prefetch_photos(),
+                self._prefetch_menu_items(),
             )
             .annotate(avg_rating=Avg("reviews__rating"))
         )
@@ -50,7 +50,7 @@ class RestaurantDetailView(DetailView):
         context["menu_items"] = self.object.menu_items.all()
         return context
 
-    def _prefetch_potos(self):
+    def _prefetch_photos(self):
         return Prefetch(
             "photos",
             queryset=Photo.objects.only("id", "image", "object_id")
@@ -60,6 +60,6 @@ class RestaurantDetailView(DetailView):
         return Prefetch(
             "menu_items",
             queryset=MenuItem.objects.prefetch_related(
-                self._photos_prefetch()
+                self._prefetch_photos()
             ).annotate(avg_rating=Avg("reviews__rating"))
         )
