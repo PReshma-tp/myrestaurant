@@ -7,9 +7,9 @@
 <div class="container py-4">
 
   <div class="d-flex justify-content-end mb-3">
-    <a href="{% url 'restaurants:restaurant_list' %}" class="btn btn-outline-secondary btn-sm">
+    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="window.history.back();">
      Back
-    </a>
+    </button>
   </div>
 
   <div class="row">
@@ -73,6 +73,9 @@
         <hr>
         <p class="text-muted">{{ restaurant.description }}</p>
       {% endif %}
+      <div class="mt-3">
+        {% include "partials/_bookmark_button.html" with restaurant=restaurant %}
+      </div>
     </div>
   </div>
 
