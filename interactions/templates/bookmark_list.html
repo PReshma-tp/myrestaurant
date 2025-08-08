@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bookmarked Restaurants{% endblock %}
+
+{% block content %}
+
+  <div class="d-flex justify-content-end mb-3">
+    <button type=""button class="btn btn-outline-secondary btn-sm" onclick="window.history.back();">
+     Back
+    </button>
+  </div>
+
+<h2>Your Bookmarked Restaurants</h2>
+
+{% if restaurants %}
+  <div class="row">
+    {% for restaurant in restaurants %}
+      {% include "partials/_restaurant_card.html" with restaurant=restaurant %}
+    {% endfor %}
+  </div>
+{% else %}
+  <p>You have no bookmarked restaurants.</p>
+{% endif %}
+
+{% endblock %}

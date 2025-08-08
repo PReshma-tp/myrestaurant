@@ -1,0 +1,14 @@
+{% with btn_label=restaurant.is_bookmarked|yesno:"Bookmarked, Bookmark" btn_class=restaurant.is_bookmarked|yesno:"btn btn-primary,btn btn-outline-primary" %}
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'interactions:toggle_bookmark' restaurant.pk %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="{{ btn_class }}">
+                {{ btn_label }}
+            </button>
+        </form>
+    {% else %}
+        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="{{ btn_class }}">
+            {{ btn_label }}
+        </a>
+    {% endif %}
+{% endwith %}

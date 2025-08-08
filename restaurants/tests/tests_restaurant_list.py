@@ -1,10 +1,13 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse, resolve
 from django.core.files.uploadedfile import SimpleUploadedFile
 from restaurants.models import Restaurant, Cuisine, Photo
+from interactions.models import Bookmark
 from restaurants.views import RestaurantListView
+from django.contrib.auth import get_user_model
 
 # Create your tests here.
+User = get_user_model()
 
 class RestaurantListViewTests(TestCase):
     def setUp(self):
@@ -30,6 +33,9 @@ class RestaurantListViewTests(TestCase):
             image=image_file
         )
 
+        self.user = User.objects.create_user(username="testuser", password="pass1234")
+        Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
+
         self.restaurant.cuisines.add(self.cuisine)
         self.response = self.client.get(reverse('restaurants:restaurant_list'))
 
@@ -51,3 +57,12 @@ class RestaurantListViewTests(TestCase):
     
     def test_photos_in_template(self):
         self.assertContains(self.response, self.photo.image.url)
+    
+    def test_is_bookmarked_annotation(self):
+        self.client.login(username="testuser", password="pass1234")
+        url = reverse("restaurants:restaurant_list")
+        response = self.client.get(url)
+        restaurants = response.context["restaurants"]
+        for r in restaurants:
+            self.assertTrue(hasattr(r, "is_bookmarked"), f"Restaurant {r.pk} missing 'is_bookmarked' attribute")
+
