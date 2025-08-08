@@ -2,20 +2,22 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.db.models import Avg, Prefetch
 from .models import Restaurant, Photo, MenuItem
+from interactions.views import BookmarkAnnotationMixin
 
 # Create your views here.
 
-class RestaurantListView(ListView):
+class RestaurantListView(BookmarkAnnotationMixin, ListView):
     model = Restaurant
     template_name = 'restaurants/restaurant_list.html'
     context_object_name = 'restaurants'
 
     def get_queryset(self):
-        return (
+        queryset= (
             Restaurant.objects
             .prefetch_related('cuisines', 'photos')
             .annotate(avg_rating=Avg('reviews__rating'))
         )
+        return self.annotate_with_bookmarks(queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,14 +28,13 @@ class RestaurantListView(ListView):
 
         return context
 
-class RestaurantDetailView(DetailView):
+class RestaurantDetailView(BookmarkAnnotationMixin, DetailView):
     model = Restaurant
     template_name = "restaurants/restaurant_detail.html"
     context_object_name = "restaurant"
 
     def get_queryset(self):
-        return (
-            Restaurant.objects
+        queryset = (Restaurant.objects
             .prefetch_related(
                 "cuisines",
                 self._prefetch_photos(),
@@ -41,6 +42,7 @@ class RestaurantDetailView(DetailView):
             )
             .annotate(avg_rating=Avg("reviews__rating"))
         )
+        return self.annotate_with_bookmarks(queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
