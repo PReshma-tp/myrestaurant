@@ -1,0 +1,12 @@
+{% if user.is_authenticated %}
+  <form method="post" action="{% url 'interactions:toggle_visited' restaurant.pk %}" class="d-inline">
+    {% csrf_token %}
+    {% if restaurant.is_visited %}
+      <button type="submit" class="btn btn-success ms-2"> Visited</button>
+    {% else %}
+      <button type="submit" class="btn btn-outline-secondary ms-2">Mark as Visited</button>
+    {% endif %}
+  </form>
+{% else %}
+  <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-outline-secondary">Login to mark visited</a>
+{% endif %}
