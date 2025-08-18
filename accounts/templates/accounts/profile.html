@@ -76,19 +76,7 @@
                     {% if bookmarks %}
                         <ul class="mb-0">
                             {% for b in bookmarks|slice:":2" %}
-                               <li class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0 me-3" style="width: 80px; height: 80px; overflow: hidden; border-radius: 0.375rem;">
-                                        {% if b.restaurant.photos.first %}
-                                            <img src="{{ b.restaurant.photos.first.image.url }}" alt="{{ b.restaurant.name }}" class="img-fluid h-100 w-100 object-fit-cover rounded">
-                                        {% else %}
-                                            <img src="{% static 'images/No_Image_Available.jpg' %}" alt="No image" class="img-fluid h-100 w-100 object-fit-cover rounded">
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark">{{ b.restaurant.name }}</div>
-                                        <div class="small text-secondary">Bookmarked on {{ b.created_at|date:"M d, Y" }}</div>
-                                    </div>
-                                </li>
+                               {% include "partials/_dashboard_list_item.html" with obj=b label="Bookmarked" date_value=b.created_at %}
                             {% endfor %}
                         </ul>
                     {% else %}
@@ -113,19 +101,7 @@
                     {% if visited %}
                         <ul class="mb-0">
                             {% for v in visited|slice:":2" %}
-                                 <li class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0 me-3" style="width: 80px; height: 80px; overflow: hidden; border-radius: 0.375rem;">
-                                        {% if v.restaurant.photos.first %}
-                                            <img src="{{ v.restaurant.photos.first.image.url }}" alt="{{ v.restaurant.name }}" class="img-fluid h-100 w-100 object-fit-cover rounded">
-                                        {% else %}
-                                            <img src="{% static 'images/No_Image_Available.jpg' %}" alt="No image" class="img-fluid h-100 w-100 object-fit-cover rounded">
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold text-dark">{{ v.restaurant.name }}</div>
-                                        <div class="small text-secondary">Visited on {{ v.visited_on|date:"M d, Y" }}</div>
-                                    </div>
-                                </li>
+                                {% include "partials/_dashboard_list_item.html" with obj=v label="Visited" date_value=v.visited_on %}
                             {% endfor %}
                         </ul>
                     {% else %}

@@ -83,4 +83,4 @@ class ToggleVisitedView(LoginRequiredMixin, View):
         if not created:
             visited_obj.delete()
 
-        return redirect('restaurants:restaurant_detail', pk=pk)
+        return redirect(request.META.get("HTTP_REFERER", reverse('restaurants:restaurant_detail', kwargs={'pk': pk})))
