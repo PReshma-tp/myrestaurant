@@ -1,6 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.urls import reverse
-from restaurants.models import Restaurant, MenuItem, Cuisine, Photo
+from restaurants.models import Restaurant, MenuItem, Cuisine
+from content.models import Photo
+from interactions.models import Bookmark 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class RestaurantDetailViewTests(TestCase):
     def setUp(self):
@@ -16,6 +21,9 @@ class RestaurantDetailViewTests(TestCase):
 
         self.cuisine = Cuisine.objects.create(name="Italian")
         self.restaurant.cuisines.add(self.cuisine)
+        
+        self.user = User.objects.create_user(username="testuser", password="pass1234")
+        Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
 
         self.menu_item = MenuItem.objects.create(
             restaurant=self.restaurant,
@@ -74,3 +82,10 @@ class RestaurantDetailViewTests(TestCase):
     def test_menu_item_uses_default_image_when_none_provided(self): 
         response = self.client.get(self.url)
         self.assertContains(response, "/static/images/No_Image_Available.jpg")
+
+    def test_is_bookmarked_annotation(self):
+        self.client.login(username="testuser", password="pass1234")
+        url = reverse("restaurants:restaurant_detail", args=[self.restaurant.pk])
+        response = self.client.get(url)
+        restaurant = response.context["restaurant"]
+        self.assertTrue(restaurant.is_bookmarked)

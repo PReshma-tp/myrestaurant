@@ -1,0 +1,51 @@
+{% load static %}
+
+<div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+  <div class="card h-100" >
+    <a href="{% url 'restaurants:restaurant_detail' restaurant.pk %}" class="text-decoration-none">
+      {% if restaurant.photos.first %}
+        <img src="{{ restaurant.photos.first.image.url }}" class="card-img-top restaurant-img" alt="{{ restaurant.name }}">
+      {% else %}
+        <img src="{% static 'images/No_Image_Available.jpg' %}" class="card-img-top restaurant-img" alt="{{ restaurant.name }}">
+      {% endif %}
+    </a>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start">
+        <h5 class="card-title mb-0">{{ restaurant.name }}</h5>
+
+        {% if user.is_authenticated %}
+          <form method="post"
+                action="{% url 'interactions:toggle_bookmark' restaurant.pk %}"
+                onsubmit="event.stopPropagation();">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-link p-0"
+                    title="{% if restaurant.is_bookmarked %}Remove bookmark{% else %}Add bookmark{% endif %}"
+                    onclick="event.stopPropagation();">
+              {% if restaurant.is_bookmarked %}
+                <i class="bi bi-bookmark-fill text-primary fs-4"></i>
+              {% else %}
+                <i class="bi bi-bookmark text-secondary fs-4"></i>
+              {% endif %}
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}?next={{ request.path }}"
+             class="text-decoration-none"
+             title="Login to bookmark">
+            <i class="bi bi-bookmark text-secondary fs-4"></i>
+          </a>
+        {% endif %}
+      </div>
+
+      {% if restaurant.avg_rating > 0 %}
+        <p class="mb-1">⭐ {{ restaurant.avg_rating|floatformat:1 }}</p>
+      {% else %}
+        <p class="mb-1 text-black">No user ratings</p>
+      {% endif %}
+
+      <p class="text-muted mb-0">₹{{ restaurant.cost_for_two }} for two</p>
+      <p class="text-black">{{ restaurant.get_veg_type_display }}</p>
+    </div>
+  </div>
+</div>
