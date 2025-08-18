@@ -31,18 +31,12 @@ class Review(models.Model):
 
     class Meta:
         ordering = ['-created_at']
-
-    def clean(self):
-        if Review.objects.exclude(pk=self.pk).filter(
-            user=self.user,
-            content_type=self.content_type,
-            object_id=self.object_id
-        ).exists():
-            raise ValidationError("You have already reviewed this item.")
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'content_type', 'object_id'],
+                name='unique_review_per_user_and_object'
+            )
+        ]
 
     def __str__(self):
         return f"{self.user} ({self.rating}★) on {self.content_object}"
