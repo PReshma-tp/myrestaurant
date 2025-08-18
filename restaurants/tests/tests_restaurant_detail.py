@@ -1,8 +1,8 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from restaurants.models import Restaurant, MenuItem, Cuisine
 from content.models import Photo
-from interactions.models import Bookmark 
+from interactions.models import Bookmark, Visited
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -89,3 +89,24 @@ class RestaurantDetailViewTests(TestCase):
         response = self.client.get(url)
         restaurant = response.context["restaurant"]
         self.assertTrue(restaurant.is_bookmarked)
+
+    def test_is_visited_false_for_anonymous_user(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        restaurant = response.context['restaurant']
+        self.assertFalse(restaurant.is_visited)
+
+    def test_is_visited_false_if_not_visited(self):
+        self.client.login(username='testuser', password='pass1234')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        restaurant = response.context['restaurant']
+        self.assertFalse(restaurant.is_visited)
+
+    def test_is_visited_true_if_visited(self):
+        Visited.objects.create(user=self.user, restaurant=self.restaurant)
+        self.client.login(username='testuser', password='pass1234')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        restaurant = response.context['restaurant']
+        self.assertTrue(restaurant.is_visited)

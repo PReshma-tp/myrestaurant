@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from django.db.models import Avg, Prefetch
 from .models import Restaurant, Photo, MenuItem
-from interactions.views import BookmarkAnnotationMixin
+from interactions.views import BookmarkAnnotationMixin, VisitedAnnotationMixin
 
 # Create your views here.
 
@@ -28,7 +28,7 @@ class RestaurantListView(BookmarkAnnotationMixin, ListView):
 
         return context
 
-class RestaurantDetailView(BookmarkAnnotationMixin, DetailView):
+class RestaurantDetailView(BookmarkAnnotationMixin,VisitedAnnotationMixin, DetailView):
     model = Restaurant
     template_name = "restaurants/restaurant_detail.html"
     context_object_name = "restaurant"
@@ -42,7 +42,9 @@ class RestaurantDetailView(BookmarkAnnotationMixin, DetailView):
             )
             .annotate(avg_rating=Avg("reviews__rating"))
         )
-        return self.annotate_with_bookmarks(queryset)
+        queryset = self.annotate_with_bookmarks(queryset)
+
+        return self.annotate_with_visited(queryset)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

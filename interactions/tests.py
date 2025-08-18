@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from interactions.models import Bookmark
+from .models import Bookmark, Visited
 from restaurants.models import Restaurant
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -93,3 +93,37 @@ class ToggleBookmarkViewTests(TestCase):
         response = self.client.post(url, HTTP_REFERER=reverse("restaurants:restaurant_list"))
         self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
         self.assertEqual(response.status_code, 302)
+
+class ToggleVisitedViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='pass')
+        self.restaurant = Restaurant.objects.create(
+            name='Testaurant',
+            description='Test description',
+            city='Test City',
+            address='123 Test St',
+            cost_for_two=500,
+            veg_type='veg',
+            is_open=True,
+            spotlight=True,
+        )
+        self.toggle_url = reverse('interactions:toggle_visited', args=[self.restaurant.pk])
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.post(self.toggle_url)
+        self.assertRedirects(response, f'/accounts/login/?next={self.toggle_url}')
+
+    def test_toggle_visited_creates_visited(self):
+        self.client.login(username='testuser', password='pass')
+        response = self.client.post(self.toggle_url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        visited_exists = Visited.objects.filter(user=self.user, restaurant=self.restaurant).exists()
+        self.assertTrue(visited_exists)
+
+    def test_toggle_visited_removes_visited(self):
+        Visited.objects.create(user=self.user, restaurant=self.restaurant)
+        self.client.login(username='testuser', password='pass')
+        response = self.client.post(self.toggle_url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        visited_exists = Visited.objects.filter(user=self.user, restaurant=self.restaurant).exists()
+        self.assertFalse(visited_exists)
