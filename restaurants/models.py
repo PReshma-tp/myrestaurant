@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 from content.models import Review, Photo
-
+from django.urls import reverse
 
 class Cuisine(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -51,6 +51,9 @@ class Restaurant(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("restaurants:restaurant_detail", args=[self.pk])
+
 
 class MenuItem(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='menu_items')
@@ -75,3 +78,6 @@ class MenuItem(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.restaurant.name})"
+
+    def get_absolute_url(self):
+        return reverse("restaurants:menu_item_detail", kwargs={'menu_id': self.pk})

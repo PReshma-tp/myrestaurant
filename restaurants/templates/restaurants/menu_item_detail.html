@@ -65,5 +65,7 @@
     <h4 class="text-dark mb-3">No other items available in {{ menu_item.cuisine.name }} cuisine.</h4>
   {% endif %}
 
+  {% include "partials/_reviews.html" with object=menu_item %}
+
 </div>
 {% endblock %}
