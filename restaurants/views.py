@@ -147,7 +147,6 @@ class MenuItemDetailView(BaseDetailView, ReviewHandleMixin):
             "related_items": self._get_related_items(menu_item),
             "avg_rating": menu_item.avg_rating,
         })
-
         return context
 
     def _get_related_items(self, menu_item):
