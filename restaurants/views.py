@@ -9,6 +9,7 @@ from content.models import Review
 from django.db import IntegrityError
 from django.urls import reverse
 from django.contrib import messages
+from .filters import RestaurantFilter
 
 # Create your views here.
 class ReviewHandleMixin:
@@ -73,10 +74,16 @@ class RestaurantListView(BookmarkAnnotationMixin, ListView):
             .prefetch_related('cuisines', 'photos')
             .annotate(avg_rating=Avg('reviews__rating'))
         )
-        return self.annotate_with_bookmarks(queryset)
+        queryset = self.annotate_with_bookmarks(queryset)
+
+        self.filterset = RestaurantFilter(self.request.GET, queryset=queryset)
+
+        return self.filterset.qs.distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['filter'] = self.filterset
         
         context['spotlight_restaurants'] = [
             restaurant for restaurant in self.object_list if restaurant.spotlight
