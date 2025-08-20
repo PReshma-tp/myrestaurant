@@ -1,8 +1,10 @@
 from django.test import TestCase
-from ..models import Restaurant, Cuisine, MenuItem
+from restaurants.models import Restaurant, Cuisine, MenuItem
 from content.models import Review
-from ..filters import RestaurantFilter
+from restaurants.filters import RestaurantFilter
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
+from django.db.models.functions import Coalesce
 
 User = get_user_model()
 
@@ -152,17 +154,20 @@ class RestaurantFilterTests(TestCase):
         self.assertEqual(qs.count(), 3)
 
     def test_min_rating_filter(self):
-        qs = RestaurantFilter({'min_rating': 4.0}).qs
+        annotated_queryset= Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
+        qs = RestaurantFilter({'min_rating': 4.0}, queryset=annotated_queryset).qs
         self.assertIn(self.restaurant1, qs)
         self.assertIn(self.restaurant3, qs)
         self.assertEqual(qs.count(), 2)
 
     def test_min_rating_no_match_filter(self):
-        qs = RestaurantFilter({'min_rating': 5.0}).qs
+        annotated_queryset = Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
+        qs = RestaurantFilter({'min_rating': 5.0}, queryset=annotated_queryset).qs
         self.assertEqual(qs.count(), 0)
 
     def test_city_and_min_rating_filters_combined(self):
-        qs = RestaurantFilter({'city': 'New York', 'min_rating': 4.0}).qs
+        annotated_queryset= Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
+        qs = RestaurantFilter({'city': 'New York', 'min_rating': 4.0}, queryset=annotated_queryset).qs
         self.assertIn(self.restaurant1, qs)
         self.assertIn(self.restaurant3, qs)
         self.assertNotIn(self.restaurant4, qs)

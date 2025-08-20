@@ -1,6 +1,6 @@
 import django_filters
 from django.db import models
-from .models import Restaurant, Cuisine
+from restaurants.models import Restaurant, Cuisine
 
 class RestaurantFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(

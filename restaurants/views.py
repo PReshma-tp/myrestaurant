@@ -2,15 +2,15 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
 from django.db.models import Avg, Prefetch
 from django.db.models.functions import Coalesce
-from .models import Restaurant, Photo, MenuItem
+from restaurants.models import Restaurant, MenuItem
 from interactions.views import BookmarkAnnotationMixin, VisitedAnnotationMixin
 from content.forms import ReviewForm
 from django.contrib.contenttypes.models import ContentType
-from content.models import Review
+from content.models import Review, Photo
 from django.db import IntegrityError
 from django.urls import reverse
 from django.contrib import messages
-from .filters import RestaurantFilter
+from restaurants.filters import RestaurantFilter
 
 # Create your views here.
 class ReviewHandleMixin:
