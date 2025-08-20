@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "interactions.apps.InteractionsConfig",
     "restaurants.apps.RestaurantsConfig",
     "widget_tweaks",
+    "django_filters",
 ]
 
 MIDDLEWARE = [

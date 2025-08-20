@@ -1,25 +1,52 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static widget_tweaks %}
 
 {% block content%}
 
-<h2 class="mb-4">Spotlight Restaurants</h2>
-<div class="row">
-  {% for restaurant in spotlight_restaurants %}
-    {% include "partials/_restaurant_card.html" with restaurant=restaurant %}
-  {% empty %}
-    <p>No spotlight restaurants available.</p>
-  {% endfor %}
-</div>
+<div class="row" >
+<div class="col-lg-3">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel-fill me-2"></i>Filters</h5>
+                <form method="get">
+                    {% for field in filter.form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small">{{ field.label }}</label>
+                            {% if field.field.widget.input_type == 'select' %}
+                                {% render_field field class="form-select form-select-sm" %}
+                            {% else %}
+                                {% render_field field class="form-control form-control-sm" placeholder=field.label %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        <a href="{% url 'restaurants:restaurant_list' %}" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+  <div class="col-lg-9">
+    <h2 class="mb-4">Spotlight Restaurants</h2>
+      <div class="row">
+        {% for restaurant in spotlight_restaurants %}
+          {% include "partials/_restaurant_card.html" with restaurant=restaurant %}
+        {% empty %}
+          <p>No spotlight restaurants available.</p>
+        {% endfor %}
+      </div>
 
 <hr class="my-4">
 
-<h2 class="mb-4">All Restaurants</h2>
-<div class="row">
-  {% for restaurant in restaurants %}
-    {% include "partials/_restaurant_card.html" with restaurant=restaurant %}
-  {% empty %}
-    <p>No restaurants found.</p>
-  {% endfor %}
+    <h2 class="mb-4">All Restaurants</h2>
+      <div class="row">
+        {% for restaurant in restaurants %}
+          {% include "partials/_restaurant_card.html" with restaurant=restaurant %}
+        {% empty %}
+          <p>No restaurants found.</p>
+        {% endfor %}
+      </div>
+    </div>
 </div>
 {% endblock %}
