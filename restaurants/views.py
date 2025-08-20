@@ -104,7 +104,7 @@ class RestaurantDetailView(BookmarkAnnotationMixin,VisitedAnnotationMixin, BaseD
                 self._prefetch_photos(),
                 self._prefetch_menu_items(),
             )
-            .annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
+            .annotate(avg_rating=Coalesce(Avg("reviews__rating"), 0.0))
         )
         queryset = self.annotate_with_bookmarks(queryset)
 
@@ -129,7 +129,7 @@ class RestaurantDetailView(BookmarkAnnotationMixin,VisitedAnnotationMixin, BaseD
             "menu_items",
             queryset=MenuItem.objects.prefetch_related(
                 self._prefetch_photos()
-            ).annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
+            ).annotate(avg_rating=Coalesce(Avg("reviews__rating"), 0.0))
         )
 
 class MenuItemDetailView(BaseDetailView, ReviewHandleMixin):
