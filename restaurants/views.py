@@ -1,6 +1,7 @@
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView
 from django.db.models import Avg, Prefetch
+from django.db.models.functions import Coalesce
 from .models import Restaurant, Photo, MenuItem
 from interactions.views import BookmarkAnnotationMixin, VisitedAnnotationMixin
 from content.forms import ReviewForm
@@ -72,7 +73,7 @@ class RestaurantListView(BookmarkAnnotationMixin, ListView):
         queryset= (
             Restaurant.objects
             .prefetch_related('cuisines', 'photos')
-            .annotate(avg_rating=Avg('reviews__rating'))
+            .annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
         )
         queryset = self.annotate_with_bookmarks(queryset)
 
@@ -103,7 +104,7 @@ class RestaurantDetailView(BookmarkAnnotationMixin,VisitedAnnotationMixin, BaseD
                 self._prefetch_photos(),
                 self._prefetch_menu_items(),
             )
-            .annotate(avg_rating=Avg("reviews__rating"))
+            .annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
         )
         queryset = self.annotate_with_bookmarks(queryset)
 
@@ -128,7 +129,7 @@ class RestaurantDetailView(BookmarkAnnotationMixin,VisitedAnnotationMixin, BaseD
             "menu_items",
             queryset=MenuItem.objects.prefetch_related(
                 self._prefetch_photos()
-            ).annotate(avg_rating=Avg("reviews__rating"))
+            ).annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
         )
 
 class MenuItemDetailView(BaseDetailView, ReviewHandleMixin):

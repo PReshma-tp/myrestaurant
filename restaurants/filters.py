@@ -12,7 +12,7 @@ class RestaurantFilter(django_filters.FilterSet):
         label='Cuisine'
     )
     menu_item = django_filters.CharFilter(
-        field_name='menu_items__name', # Query across the relationship
+        field_name='menu_items__name',
         lookup_expr='icontains',
         label='Menu Item'
     )
@@ -44,9 +44,7 @@ class RestaurantFilter(django_filters.FilterSet):
     )
 
     def filter_by_min_rating(self, queryset, name, value):
-        return queryset.annotate(
-            avg_rating=models.Avg('reviews__rating')
-        ).filter(avg_rating__gte=value)
+        return queryset.filter(avg_rating__gte=value)
 
     class Meta:
         model = Restaurant
