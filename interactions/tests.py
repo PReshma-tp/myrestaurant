@@ -84,7 +84,7 @@ class ToggleBookmarkViewTests(TestCase):
         url = reverse("interactions:toggle_bookmark", args=[self.restaurant.pk])
         response = self.client.post(url, HTTP_REFERER=reverse("restaurants:restaurant_list"))
         self.assertTrue(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_removes_bookmark(self):
         Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
@@ -92,7 +92,7 @@ class ToggleBookmarkViewTests(TestCase):
         url = reverse("interactions:toggle_bookmark", args=[self.restaurant.pk])
         response = self.client.post(url, HTTP_REFERER=reverse("restaurants:restaurant_list"))
         self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
 class ToggleVisitedViewTests(TestCase):
     def setUp(self):

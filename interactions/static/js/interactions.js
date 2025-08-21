@@ -1,3 +1,5 @@
+import { showToast } from './toast.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     async function sendAjaxRequest(form) {
         const url = form.action;
@@ -26,41 +28,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const form = event.target;
         const button = form.querySelector('button[type="submit"]');
+        const interactionType = form.dataset.interactionType;
 
         try {
             const data = await sendAjaxRequest(form);
             if (data.status === 'success') {
-                updateUI(form, button, data);
+                updateUI(interactionType, button, data);
+            }
+            else{
+                showToast("Action failed. Please try again.", "warning");
             }
         } catch (error) {
-            console.error('Action failed:', error);
+            showToast("Network error. Please try again.", "danger");
         }
     }
 
-    function updateUI(form, button, data) {
-        if (form.action.includes('toggle_bookmark')) {
+    function updateUI(interactionType, button, data) {
+        if (interactionType === 'bookmark') {
             updateBookmarkUI(button, data.is_bookmarked);
-        } else if (form.action.includes('toggle_visited')) {
+        } else if (interactionType === 'visited') {
             updateVisitedUI(button, data.is_visited);
         }
     }
 
     function updateBookmarkUI(button, isBookmarked) {
-        const icon = button.querySelector('i');
-        if (icon) {
-            icon.classList.toggle('bi-bookmark-fill', isBookmarked);
-            icon.classList.toggle('bi-bookmark', !isBookmarked);
-            icon.classList.toggle('text-primary', isBookmarked);
-            icon.classList.toggle('text-secondary', !isBookmarked);
-        } else {
-            button.textContent = isBookmarked ? 'Bookmarked' : 'Bookmark';
-            button.classList.toggle('btn-primary', isBookmarked);
-            button.classList.toggle('btn-outline-primary', !isBookmarked);
-        }
+        const restaurantId = button.closest('form').dataset.restaurantId;
+        const allButtons = document.querySelectorAll(
+            `form[data-restaurant-id="${restaurantId}"][data-interaction-type="bookmark"] button`
+        );
+
+        allButtons.forEach(btn => {
+            const icon = btn.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('bi-bookmark-fill', isBookmarked);
+                icon.classList.toggle('bi-bookmark', !isBookmarked);
+                icon.classList.toggle('text-primary', isBookmarked);
+                icon.classList.toggle('text-secondary', !isBookmarked);
+            } else {
+                btn.textContent = isBookmarked ? 'Bookmarked' : 'Bookmark';
+                btn.classList.toggle('btn-primary', isBookmarked);
+                btn.classList.toggle('btn-outline-primary', !isBookmarked);
+            }
+        });
     }
 
     function updateVisitedUI(button, isVisited) {
-        console.log('updateVisited UI function called')
         button.textContent = isVisited ? 'Visited' : 'Mark as Visited';
         button.classList.toggle('btn-success', isVisited);
         button.classList.toggle('btn-outline-secondary', !isVisited);
