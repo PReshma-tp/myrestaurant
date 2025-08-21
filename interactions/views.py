@@ -6,6 +6,7 @@ from django.shortcuts import redirect, get_object_or_404
 from restaurants.models import Restaurant
 from django.db.models import Exists, OuterRef, Value, BooleanField
 from django.urls import reverse
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -59,7 +60,7 @@ class ToggleBookmarkView(LoginRequiredMixin, View):
         )
         if not created:
             bookmark.delete()
-        return redirect(request.META.get("HTTP_REFERER", "restaurants:restaurant_list"))
+        return JsonResponse({'is_bookmarked': created, 'status': 'success'})
 
 class VisitedListView(LoginRequiredMixin,BookmarkAnnotationMixin, ListView):
     model = Restaurant
@@ -83,4 +84,4 @@ class ToggleVisitedView(LoginRequiredMixin, View):
         if not created:
             visited_obj.delete()
 
-        return redirect(request.META.get("HTTP_REFERER", reverse('restaurants:restaurant_detail', kwargs={'pk': pk})))
+        return JsonResponse({'is_visited': created, 'status': 'success'})

@@ -16,12 +16,14 @@
         {% if user.is_authenticated %}
           <form method="post"
                 action="{% url 'interactions:toggle_bookmark' restaurant.pk %}"
-                onsubmit="event.stopPropagation();">
+                data-interaction-type="bookmark"
+                data-restaurant-id="{{ restaurant.id }}"
+          >
             {% csrf_token %}
             <button type="submit"
                     class="btn btn-link p-0"
                     title="{% if restaurant.is_bookmarked %}Remove bookmark{% else %}Add bookmark{% endif %}"
-                    onclick="event.stopPropagation();">
+                    >
               {% if restaurant.is_bookmarked %}
                 <i class="bi bi-bookmark-fill text-primary fs-4"></i>
               {% else %}
