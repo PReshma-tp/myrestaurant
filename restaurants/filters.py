@@ -44,10 +44,6 @@ class RestaurantFilter(django_filters.FilterSet):
     )
     
     ordering = django_filters.OrderingFilter(
-        fields=(
-            ('avg_rating', 'rating'),
-            ('cost_for_two', 'cost_for_two'),
-        ),
         choices=[
             ('-avg_rating', 'Rating: High to Low'),
             ('avg_rating', 'Rating: Low to High'),
