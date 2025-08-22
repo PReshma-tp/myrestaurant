@@ -75,6 +75,8 @@ class RestaurantFilterTests(TestCase):
         Review.objects.create(user=self.user1, content_object=self.restaurant3, rating=5)
         Review.objects.create(user=self.user2, content_object=self.restaurant3, rating=3)
 
+        self.annotated_queryset= Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
+
     def test_name_filter_partial_match(self):
         qs = RestaurantFilter({'name': 'pasta'}).qs
         self.assertIn(self.restaurant1, qs)
@@ -90,17 +92,10 @@ class RestaurantFilterTests(TestCase):
         self.assertEqual(qs.count(), 0)
 
     def test_single_cuisine_filter(self):
-        qs = RestaurantFilter({'cuisines': [self.italian.pk]}).qs
+        qs = RestaurantFilter({'cuisines': self.italian.pk}).qs
         self.assertIn(self.restaurant1, qs)
         self.assertIn(self.restaurant4, qs)
         self.assertEqual(qs.count(), 2)
-
-    def test_multiple_cuisines_filter(self):
-        qs = RestaurantFilter({'cuisines': [self.italian.pk, self.mexican.pk]}).qs
-        self.assertIn(self.restaurant1, qs)
-        self.assertIn(self.restaurant2, qs)
-        self.assertIn(self.restaurant4, qs)
-        self.assertEqual(qs.count(), 3)
 
     def test_menu_item_filter_match(self):
         qs = RestaurantFilter({'menu_item': 'spaghetti'}).qs
@@ -154,20 +149,17 @@ class RestaurantFilterTests(TestCase):
         self.assertEqual(qs.count(), 3)
 
     def test_min_rating_filter(self):
-        annotated_queryset= Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
-        qs = RestaurantFilter({'min_rating': 4.0}, queryset=annotated_queryset).qs
+        qs = RestaurantFilter({'min_rating': 4.0}, queryset=self.annotated_queryset).qs
         self.assertIn(self.restaurant1, qs)
         self.assertIn(self.restaurant3, qs)
         self.assertEqual(qs.count(), 2)
 
     def test_min_rating_no_match_filter(self):
-        annotated_queryset = Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
-        qs = RestaurantFilter({'min_rating': 5.0}, queryset=annotated_queryset).qs
+        qs = RestaurantFilter({'min_rating': 5.0}, queryset=self.annotated_queryset).qs
         self.assertEqual(qs.count(), 0)
 
     def test_city_and_min_rating_filters_combined(self):
-        annotated_queryset= Restaurant.objects.annotate(avg_rating=Coalesce(Avg('reviews__rating'), 0.0))
-        qs = RestaurantFilter({'city': 'New York', 'min_rating': 4.0}, queryset=annotated_queryset).qs
+        qs = RestaurantFilter({'city': 'New York', 'min_rating': 4.0}, queryset=self.annotated_queryset).qs
         self.assertIn(self.restaurant1, qs)
         self.assertIn(self.restaurant3, qs)
         self.assertNotIn(self.restaurant4, qs)
@@ -181,3 +173,19 @@ class RestaurantFilterTests(TestCase):
         }).qs
         self.assertIn(self.restaurant4, qs)
         self.assertEqual(qs.count(), 1)
+
+    def test_sort_by_rating_high_to_low(self):
+        qs = RestaurantFilter({'ordering': '-avg_rating'}, queryset=self.annotated_queryset).qs
+        self.assertEqual(list(qs), [self.restaurant1, self.restaurant3, self.restaurant2, self.restaurant4])
+
+    def test_sort_by_rating_low_to_high(self):
+        qs = RestaurantFilter({'ordering': 'avg_rating'}, queryset=self.annotated_queryset).qs
+        self.assertEqual(list(qs), [self.restaurant4, self.restaurant2, self.restaurant3, self.restaurant1])
+
+    def test_sort_by_cost_low_to_high(self):
+        qs = RestaurantFilter({'ordering': 'cost_for_two'}).qs
+        self.assertEqual(list(qs), [self.restaurant2, self.restaurant3, self.restaurant1, self.restaurant4])
+
+    def test_sort_by_cost_high_to_low(self):
+        qs = RestaurantFilter({'ordering': '-cost_for_two'}).qs
+        self.assertEqual(list(qs), [self.restaurant4, self.restaurant1, self.restaurant3, self.restaurant2])

@@ -7,7 +7,7 @@ class RestaurantFilter(django_filters.FilterSet):
         lookup_expr='icontains',
         label='Restaurant Name'
     )
-    cuisines = django_filters.ModelMultipleChoiceFilter(
+    cuisines = django_filters.ModelChoiceFilter(
         queryset=Cuisine.objects.all(),
         label='Cuisine'
     )
@@ -40,7 +40,17 @@ class RestaurantFilter(django_filters.FilterSet):
     )
     min_rating = django_filters.NumberFilter(
         method='filter_by_min_rating',
-        label='Minimum Rating'
+        label='Rating'
+    )
+    
+    ordering = django_filters.OrderingFilter(
+        choices=[
+            ('-avg_rating', 'Rating: High to Low'),
+            ('avg_rating', 'Rating: Low to High'),
+            ('cost_for_two', 'Cost for Two: Low to High'),
+            ('-cost_for_two', 'Cost for Two: High to Low'),
+        ],
+        label='Sort By'
     )
 
     def filter_by_min_rating(self, queryset, name, value):
