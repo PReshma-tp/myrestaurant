@@ -11,6 +11,8 @@ from django.db import IntegrityError
 from django.urls import reverse
 from django.contrib import messages
 from restaurants.filters import RestaurantFilter
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 # Create your views here.
 class ReviewHandleMixin:
@@ -35,13 +37,34 @@ class ReviewHandleMixin:
                 review.content_type = content_type
                 review.object_id = object_id
                 review.save()
+
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    html = render_to_string(
+                        "partials/_reviews.html",
+                        self.get_context_data(),
+                        request=request
+                    )
+                    return JsonResponse({"status": "success", "html": html})
                 return redirect(self.object.get_absolute_url())
+
             except IntegrityError:
+                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+                    return JsonResponse({
+                        "status": "error",
+                        "message": "You have already submitted a review for this item."
+                    })
                 messages.warning(self.request, "You have already submitted a review for this item.")
                 return redirect(self.object.get_absolute_url())
 
-        return self.render_to_response(self.get_context_data(form=form))
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            html = render_to_string(
+                "partials/_reviews.html",
+                self.get_context_data(form=form),
+                request=request
+            )
+            return JsonResponse({"status": "error", "html": html})
 
+        return self.render_to_response(self.get_context_data(form=form))
 
 class UserReviewFormMixin:
     def get_review_form(self, obj):
