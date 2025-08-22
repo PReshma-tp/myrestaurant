@@ -1,77 +1,73 @@
 document.addEventListener('DOMContentLoaded', function() {
-    function initStarRating() {
-        const starContainer = document.getElementById('star-rating-container');
+
+    function initStarRating(container = document) {
+        const starContainer = container.querySelector('#star-rating-container');
         if (!starContainer) return;
 
-        const ratingInput = document.getElementById('id_rating');
+        const ratingInput = container.querySelector('#id_rating');
 
         function updateStars(rating) {
             starContainer.querySelectorAll('i').forEach(star => {
-                const starRating = parseInt(star.getAttribute('data-rating'));
-                if (starRating <= rating) {
-                    star.classList.remove('bi-star', 'text-secondary');
-                    star.classList.add('bi-star-fill', 'text-warning');
-                } else {
-                    star.classList.remove('bi-star-fill', 'text-warning');
-                    star.classList.add('bi-star', 'text-secondary');
-                }
+                const starRating = parseInt(star.getAttribute('data-rating'), 10);
+                star.classList.toggle('bi-star-fill', starRating <= rating);
+                star.classList.toggle('text-warning', starRating <= rating);
+                star.classList.toggle('bi-star', starRating > rating);
+                star.classList.toggle('text-secondary', starRating > rating);
             });
         }
 
-        const initialRating = parseInt(starContainer.getAttribute('data-initial-rating'));
+        const initialRating = parseInt(starContainer.getAttribute('data-initial-rating'), 10);
         if (!isNaN(initialRating)) {
             updateStars(initialRating);
-            if (ratingInput) {
-                ratingInput.value = initialRating;
-            }
+            if (ratingInput) ratingInput.value = initialRating;
         }
 
         starContainer.addEventListener('click', function(event) {
             const star = event.target.closest('i');
-            if (star) {
-                const newRating = parseInt(star.getAttribute('data-rating'));
-                if (ratingInput) {
-                    ratingInput.value = newRating;
-                }
-                updateStars(newRating);
-            }
-        });
-    }
+            if (!star || !ratingInput) return;
 
-    function initReviewForm() {
-        const reviewForm = document.getElementById("review-form");
-        if (!reviewForm) return;
-
-        reviewForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const formData = new FormData(reviewForm);
-            const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
-
-            try {
-                const response = await fetch(reviewForm.action, {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        "X-CSRFToken": csrfToken,
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                });
-
-                if (response.redirected) {
-                    window.location.href = response.url;
-                    return;
-                }
-
-                const data = await response.json();
-                document.querySelector(".reviews-section").innerHTML = data.html;
-                initStarRating();
-                initReviewForm();
-            } catch (error) {
-                console.error("Error submitting review:", error);
-            }
+            const newRating = parseInt(star.getAttribute('data-rating'), 10);
+            ratingInput.value = newRating;
+            updateStars(newRating);
         });
     }
 
     initStarRating();
-    initReviewForm();
+
+    document.body.addEventListener('submit', async (e) => {
+        const reviewForm = e.target.closest('#review-form');
+        if (!reviewForm) return;
+
+        e.preventDefault();
+
+        const formData = new FormData(reviewForm);
+        const csrfToken = reviewForm.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        try {
+            const response = await fetch(reviewForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+
+            const data = await response.json();
+            const reviewsSection = document.querySelector('.reviews-section');
+            if (reviewsSection) {
+                reviewsSection.innerHTML = data.html;
+                initStarRating(reviewsSection);
+            }
+
+        } catch (error) {
+            console.error('Error submitting review:', error);
+        }
+    });
+
 });

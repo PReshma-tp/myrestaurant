@@ -49,11 +49,14 @@ class ReviewHandleMixin:
 
             except IntegrityError:
                 if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                    return JsonResponse({
-                        "status": "error",
-                        "message": "You have already submitted a review for this item."
-                    })
-                messages.warning(self.request, "You have already submitted a review for this item.")
+                    form = ReviewForm(request.POST)
+                    form.add_error(None, "You have already submitted a review for this item.")
+                    html = render_to_string(
+                        "partials/_reviews.html",
+                        self.get_context_data(form=form),
+                        request=request
+                    )
+                    return JsonResponse({"status": "error", "html": html})
                 return redirect(self.object.get_absolute_url())
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
