@@ -14,7 +14,7 @@
     <!-- Restaurant Photos Carousel -->
     <div class="col-lg-6">
       {% if restaurant.photos.exists %}
-        <div id="photoCarousel"  data-bs-wrap="false" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div id="photoCarousel"  data-bs-wrap="false" class="carousel slide mb-4">
           <div class="carousel-inner">
             {% for photo in restaurant.photos.all %}
               <div class="carousel-item {% if forloop.first %}active{% endif %}">
@@ -33,7 +33,7 @@
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
           </button>
-    </div>
+        </div>
       {% else %}
         <img src="{% static 'images/No_Image_Available.jpg' %}"
              class="img-fluid rounded shadow-sm mb-3 detail-img"
