@@ -11,20 +11,29 @@
   </div>
 
   <div class="row">
-    <!-- Left Column: Main Photo -->
+    <!-- Restaurant Photos Carousel -->
     <div class="col-lg-6">
-      {% if main_photo %}
-        <img src="{{ main_photo.image.url }}"
-             class="img-fluid rounded shadow-sm mb-3 detail-img"
-             alt="{{ restaurant.name }}">
-        {% if restaurant.photos.count > 1 %}
-          <button type="button"
-                  class="btn btn-outline-primary btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#photoModal">
-            View all photos
+      {% if restaurant.photos.exists %}
+        <div id="photoCarousel"  data-bs-wrap="false" class="carousel slide mb-4">
+          <div class="carousel-inner">
+            {% for photo in restaurant.photos.all %}
+              <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ photo.image.url }}"
+                   class="d-block w-100 rounded shadow-sm detail-img"
+                   alt="{{ restaurant.name }} photo {{ forloop.counter }}"
+                 >
+              </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
           </button>
-        {% endif %}
+          <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
       {% else %}
         <img src="{% static 'images/No_Image_Available.jpg' %}"
              class="img-fluid rounded shadow-sm mb-3 detail-img"
@@ -118,29 +127,6 @@
   {% else %}
     <p>No menu items available.</p>
   {% endif %}
-
-  <!-- Photos Modal -->
-  <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header justify-content-between">
-          <h5 class="modal-title">{{ restaurant.name }} - All Photos</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            {% for photo in extra_photos %}
-              <div class="col-sm-6 col-md-4">
-                <img src="{{ photo.image.url }}"
-                     class="img-thumbnail modal-photo-thumb"
-                     alt="{{ restaurant.name }} photo {{ forloop.counter }}">
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   {% include "partials/_reviews.html" with object=restaurant %}
 
