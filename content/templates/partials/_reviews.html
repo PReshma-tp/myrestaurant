@@ -1,35 +1,48 @@
-{% load app_filters widget_tweaks %}
+{% load static app_filters widget_tweaks %}
 
 <div class="reviews-section my-5">
     {% if user.is_authenticated %}
-        <form method="post" action="{{ object|form_action_url }}" class="review-form mb-4" novalidate>
-            {% csrf_token %}
-            <div class="card p-4 shadow-sm border-0">
+        <div class="card p-4 my-4">
+            <h4 class="mb-3">
+              {% if review_form.instance.pk %}
+                Edit Your Review
+              {% else %}
+                Write a Review
+              {% endif %}
+            </h4>
+            <form id="review-form" method="post" action=".">
+                {% csrf_token %}
                 <div class="mb-3">
-                    <label for="{{ review_form.rating.id_for_label }}" class="form-label fw-bold">Rating</label>
-                    {% render_field review_form.rating class="form-select form-control-sm" %}
-                    <div class="text-danger small mt-1">
-                        {{ review_form.rating.errors }}
+                    <label for="id_rating" class="form-label d-block">Your Rating</label>
+                    <div id="star-rating-container"
+                        class="d-flex align-items-center"
+                        data-initial-rating="{{ review_form.instance.rating|default:'0'}}"
+                    >
+                        {% for i in "12345" %}
+                        <i class="bi bi-star{% if review_form.instance.rating >= i|add:'0' %}-fill text-warning{% endif %} fs-3" data-rating="{{ i }}"></i>
+                        {% endfor %}
                     </div>
+                    <input type="hidden" name="rating" id="id_rating" value="{{ review_form.instance.rating|default:'0' }}">
+                    {% for error in review_form.rating.errors %}
+                        <div class="invalid-feedback d-block">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 <div class="mb-3">
-                    <label for="{{ review_form.comment.id_for_label }}" class="form-label fw-bold">Comment</label>
+                    <label for="{{ review_form.comment.id_for_label }}" class="form-label"> Comment </label>
                     {% render_field review_form.comment class="form-control" rows="3" %}
                     <div class="text-danger small mt-1">
                         {{ review_form.comment.errors }}
                     </div>
                 </div>
-                <div class="d-flex justify-content-start">
-                <button type="submit" class="btn btn-primary mt-2">
+                <button id="submit-review-btn" type="submit" class="btn btn-primary mt-2">
                     {% if review_form.instance.pk %}
-                        Edit Review
+                        Update Review
                     {% else %}
                         Submit Review
                     {% endif %}
                 </button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     {% else %}
         <div class="alert alert-info text-center">
             <a href="{% url 'accounts:login' %}">Log in</a> to leave a review.
